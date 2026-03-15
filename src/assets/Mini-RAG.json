@@ -12,12 +12,61 @@
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "{{api}}/",
+          "raw": "{{base}}/",
           "host": [
-            "{{api}}"
+            "{{base}}"
           ],
           "path": [
             ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "check-healthy",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base}}/health",
+          "host": [
+            "{{base}}"
+          ],
+          "path": [
+            "health"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "upload-file",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "file",
+              "type": "file",
+              "id": 0,
+              "fileUploadError": "",
+              "src": [
+                "c:\\Users\\abdal\\Desktop\\ww2.txt"
+              ]
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{data}}/upload/1",
+          "host": [
+            "{{data}}"
+          ],
+          "path": [
+            "upload",
+            "1"
           ]
         }
       },
@@ -50,8 +99,13 @@
   ],
   "variable": [
     {
-      "key": "api",
-      "value": ""
+      "key": "base",
+      "value": "http://localhost:8000/v1"
+    },
+    {
+      "key": "data",
+      "value": "http://localhost:8000/v1/data",
+      "type": "string"
     }
   ]
 }

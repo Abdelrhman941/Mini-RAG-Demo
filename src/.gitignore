@@ -3,4 +3,25 @@
 .env.local
 .env.*.local
 
-__pycache__/
+# Python
+*__pycache__/
+*.py[cod]
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual Environment
+venv/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+assets/files/
