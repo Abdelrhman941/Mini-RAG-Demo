@@ -27,6 +27,10 @@
 
 <div style="width: 100%; height: 30px; background: linear-gradient(to right, rgb(235, 238, 212), rgb(235, 238, 212));"></div>
 
+![image](images\image1.png)
+
+<div style="width: 100%; height: 30px; background: linear-gradient(to right, rgb(235, 238, 212), rgb(235, 238, 212));"></div>
+
 ## **BaseController.py**
 ```py
 from core.configs import Settings, get_settings
