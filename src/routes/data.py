@@ -13,7 +13,7 @@ data_router = APIRouter(prefix="/v1/data", tags=["data"])
 
 @data_router.post("/upload/{project_id}", status_code=status.HTTP_201_CREATED)
 async def upload_data(
-    project_id: str, file: UploadFile, app_settings: Settings = Depends(get_settings)
+    project_id: str, file: UploadFile, appSettings: Settings = Depends(get_settings)
 ):
     data_controller = DataController()
 
@@ -46,9 +46,12 @@ async def upload_data(
     # ----------- 3. Save file in chunks
     try:
         async with aiofiles.open(file_path, "wb") as f:
-            while chunk := await file.read(app_settings.FILE_DEFAULT_CHUNK_SIZE):
+            while chunk := await file.read(appSettings.FILE_DEFAULT_CHUNK_SIZE):
                 await f.write(chunk)
-        logger.info(f"File uploaded | project_id={project_id} | " f"file_id={file_id} | size={file.size} bytes")
+        logger.info(
+            f"File uploaded | project_id={project_id} | "
+            f"file_id={file_id} | size={file.size} bytes"
+        )
     except IOError as e:
         logger.error(f"IO error while saving file '{file_id}': {e}")
         return JSONResponse(
@@ -82,26 +85,27 @@ async def upload_data(
 
 
 @data_router.post("/process/{project_id}")
-async def process_endpoint(project_id: str, process_request: ProcessRequest):
+async def process_endpoint(
+    project_id: str,
+    process_request: ProcessRequest,
+    appSettings: Settings = Depends(get_settings),
+):
     try:
         file_id = process_request.file_id
-        chunk_size = process_request.chunk_size or 1024
-        overlap_size = process_request.overlap_size or 0
+        chunk_size = process_request.chunk_size or appSettings.CHUNK_SIZE_DEFAULT
+        overlap_size = process_request.overlap_size or appSettings.OVERLAP_SIZE_DEFAULT
         process_controller = ProcessController(project_id=project_id)
         file_content = process_controller.get_file_content(file_id=file_id)
         file_chunks = process_controller.process_file_content(
             file_content=file_content,
             file_id=file_id,
             chunk_size=chunk_size,
-            overlap_size=overlap_size
+            overlap_size=overlap_size,
         )
 
         # convert chunks to dict format for response (or you can choose to save them in DB instead)
         chunks_data = [
-            {
-                "content": chunk.page_content,
-                "metadata": chunk.metadata
-            }
+            {"content": chunk.page_content, "metadata": chunk.metadata}
             for chunk in file_chunks
         ]
 
@@ -115,23 +119,23 @@ async def process_endpoint(project_id: str, process_request: ProcessRequest):
                 "chunk_size": chunk_size,
                 "chunks_preview": chunks_data[:10],
                 "total_chunks": len(chunks_data),
-            }
+            },
         )
     except FileNotFoundError as e:
         logger.error(f"File not found: {e}")
         return JSONResponse(
             status_code=status.HTTP_404_NOT_FOUND,
-            content={"signal": RS.PROCESSING_FAILED.value, "error": "File not found"}
+            content={"signal": RS.PROCESSING_FAILED.value, "error": "File not found"},
         )
     except ValueError as e:
         logger.error(f"Invalid file type: {e}")
         return JSONResponse(
             status_code=status.HTTP_400_BAD_REQUEST,
-            content={"signal": RS.PROCESSING_FAILED.value, "error": str(e)}
+            content={"signal": RS.PROCESSING_FAILED.value, "error": str(e)},
         )
     except Exception as e:
         logger.error(f"Processing failed: {e}")
         return JSONResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            content={"signal": RS.PROCESSING_FAILED.value}
+            content={"signal": RS.PROCESSING_FAILED.value},
         )

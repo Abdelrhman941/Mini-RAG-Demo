@@ -7,9 +7,9 @@ import re, os
 
 class DataController(BaseController):
     """Controller for handling data and file operations."""
+
     def __init__(self):
         super().__init__()
-        self.size_scale = 1048576  # convert MB to bytes
         self.project_controller = ProjectController()
 
     # ------------------ Validate uploaded file type and size ------------------
@@ -18,7 +18,8 @@ class DataController(BaseController):
             return False, RS.FILE_TYPE_NOT_SUPPORTED.value
         if (
             file.size is not None
-            and file.size > self.settings.FILE_MAX_SIZE * self.size_scale
+            and file.size
+            > self.settings.FILE_MAX_SIZE * self.settings.FILE_MAX_SIZE_SCALE
         ):
             return False, RS.FILE_SIZE_EXCEEDED.value
         return True, RS.FILE_VALIDATED_SUCCESS.value
@@ -35,7 +36,11 @@ class DataController(BaseController):
     # ------------------- Generate unique filepath for uploaded file ------------------
     def generate_unique_filepath(self, orig_file_name: str | None, project_id: str):
         project_path = self.project_controller.get_project_path(project_id)
-        cleaned_file_name = self.get_clean_file_name(orig_file_name) if orig_file_name else "unnamed_file"
+        cleaned_file_name = (
+            self.get_clean_file_name(orig_file_name)
+            if orig_file_name
+            else "unnamed_file"
+        )
 
         max_attempts = 100
         for _ in range(max_attempts):
