@@ -4,9 +4,3 @@ python-multipart==0.0.22       # for handling file uploads
 python-dotenv==1.2.2           # for managing environment variables
 pydantic-settings==2.13.1      # for structured settings management
 aiofiles==25.1.0
-
-# Testing dependencies
-pytest==8.3.4
-pytest-asyncio==0.24.0
-pytest-cov==6.0.0
-httpx==0.28.1                  # For testing FastAPI endpoints

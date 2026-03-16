@@ -33,7 +33,7 @@ async def upload_data(
         logger.error(f"Invalid project ID '{project_id}': {e}")
         return JSONResponse(
             status_code=status.HTTP_400_BAD_REQUEST,
-            content={"signal": "INVALID_PROJECT_ID", "error": str(e)},
+            content={"signal": RS.INVALID_FILENAME.value, "error": str(e)},
         )
     except Exception as e:
         logger.error(f"Error generating filepath: {e}")
