@@ -71,6 +71,33 @@
         }
       },
       "response": []
+    },
+    {
+      "name": "process",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"file_id\": \"4e2za85s9bif_ww2.txt\",\r\n    \"chunk_size\":400,\r\n    \"overlap_size\":20\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{data}}/process/1",
+          "host": [
+            "{{data}}"
+          ],
+          "path": [
+            "process",
+            "1"
+          ]
+        }
+      },
+      "response": []
     }
   ],
   "event": [
@@ -100,12 +127,11 @@
   "variable": [
     {
       "key": "base",
-      "value": "http://localhost:8000/v1"
+      "value": ""
     },
     {
       "key": "data",
-      "value": "http://localhost:8000/v1/data",
-      "type": "string"
+      "value": ""
     }
   ]
 }

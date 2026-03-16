@@ -1,4 +1,4 @@
-```md
+```
 ├── assets
 │   ├── .gitkeep                  # to keep the empty directory in git
 │   └── Mini-RAG.json
