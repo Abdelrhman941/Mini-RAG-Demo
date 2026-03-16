@@ -1,5 +1,9 @@
-from .BaseController import BaseController
 from .DataController import DataController
 from .ProjectController import ProjectController
+from .ProcessController import ProcessController
 
-__all__ = ["BaseController", "ProjectController", "DataController"]
+__all__ = [
+    "DataController",
+    "ProjectController",
+    "ProcessController",
+]

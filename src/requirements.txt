@@ -1,6 +1,8 @@
 fastapi==0.135.1
 uvicorn[standard]==0.41.0
-python-multipart==0.0.22       # for handling file uploads
-python-dotenv==1.2.2           # for managing environment variables
-pydantic-settings==2.13.1      # for structured settings management
-aiofiles==25.1.0
+python-multipart==0.0.22        # for handling file uploads
+python-dotenv==1.2.2            # for managing environment variables
+pydantic-settings==2.13.1       # for structured settings management
+aiofiles==25.1.0                # for asynchronous file handling
+langchain==1.2.12               # for text splitting and document processing
+PyMuPDF==1.27.2                 # for PDF processing

@@ -1,9 +1,10 @@
 from fastapi import APIRouter, Depends, UploadFile, status
 from fastapi.responses import JSONResponse
-from core.configs import Settings, get_settings
-from controllers import DataController
+from core import Settings, get_settings
+from controllers import DataController, ProcessController
 from models import ResponseSignal as RS
 import aiofiles, logging
+from .schemas import ProcessRequest
 
 logger = logging.getLogger("uvicorn.error")
 
@@ -47,7 +48,7 @@ async def upload_data(
         async with aiofiles.open(file_path, "wb") as f:
             while chunk := await file.read(app_settings.FILE_DEFAULT_CHUNK_SIZE):
                 await f.write(chunk)
-        logger.info(f"File uploaded successfully: {file_id} to project {project_id}")
+        logger.info(f"File uploaded | project_id={project_id} | " f"file_id={file_id} | size={file.size} bytes")
     except IOError as e:
         logger.error(f"IO error while saving file '{file_id}': {e}")
         return JSONResponse(
@@ -78,3 +79,59 @@ async def upload_data(
             "project_id": project_id,
         },
     )
+
+
+@data_router.post("/process/{project_id}")
+async def process_endpoint(project_id: str, process_request: ProcessRequest):
+    try:
+        file_id = process_request.file_id
+        chunk_size = process_request.chunk_size or 1024
+        overlap_size = process_request.overlap_size or 0
+        process_controller = ProcessController(project_id=project_id)
+        file_content = process_controller.get_file_content(file_id=file_id)
+        file_chunks = process_controller.process_file_content(
+            file_content=file_content,
+            file_id=file_id,
+            chunk_size=chunk_size,
+            overlap_size=overlap_size
+        )
+
+        # convert chunks to dict format for response (or you can choose to save them in DB instead)
+        chunks_data = [
+            {
+                "content": chunk.page_content,
+                "metadata": chunk.metadata
+            }
+            for chunk in file_chunks
+        ]
+
+        return JSONResponse(
+            status_code=status.HTTP_200_OK,
+            content={
+                "signal": RS.PROCESSING_SUCCESS.value,
+                "project_id": project_id,
+                "file_id": file_id,
+                "overlap_size": overlap_size,
+                "chunk_size": chunk_size,
+                "chunks_preview": chunks_data[:10],
+                "total_chunks": len(chunks_data),
+            }
+        )
+    except FileNotFoundError as e:
+        logger.error(f"File not found: {e}")
+        return JSONResponse(
+            status_code=status.HTTP_404_NOT_FOUND,
+            content={"signal": RS.PROCESSING_FAILED.value, "error": "File not found"}
+        )
+    except ValueError as e:
+        logger.error(f"Invalid file type: {e}")
+        return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content={"signal": RS.PROCESSING_FAILED.value, "error": str(e)}
+        )
+    except Exception as e:
+        logger.error(f"Processing failed: {e}")
+        return JSONResponse(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content={"signal": RS.PROCESSING_FAILED.value}
+        )

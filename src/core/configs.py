@@ -12,6 +12,8 @@ class Settings(BaseSettings):
     FILE_ALLOWED_TYPES: list[str] = ["text/plain", "application/pdf"]
     FILE_MAX_SIZE: int = 10
     FILE_DEFAULT_CHUNK_SIZE: int = 512000  # 512KB
+    CHUNK_SIZE_DEFAULT: int = 800
+    OVERLAP_SIZE_DEFAULT: int = 100
 
     class Config:
         env_file = ".env"

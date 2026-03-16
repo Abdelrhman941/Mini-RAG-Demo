@@ -224,7 +224,7 @@ async def upload_data(
         async with aiofiles.open(file_path, "wb") as f:
             while chunk := await file.read(app_settings.FILE_DEFAULT_CHUNK_SIZE):
                 await f.write(chunk)
-        logger.info(f"File uploaded successfully: {file_id} to project {project_id}")
+        logger.info(f"File uploaded | project_id={project_id} | " f"file_id={file_id} | size={file.size} bytes")
     except IOError as e:
         logger.error(f"IO error while saving file '{file_id}': {e}")
         return JSONResponse(

@@ -7,7 +7,6 @@ import re, os
 
 class DataController(BaseController):
     """Controller for handling data and file operations."""
-
     def __init__(self):
         super().__init__()
         self.size_scale = 1048576  # convert MB to bytes
