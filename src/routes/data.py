@@ -13,7 +13,6 @@ data_router = APIRouter(prefix="/v1/data", tags=["data"])
 
 @data_router.post("/upload/{project_id}", status_code=status.HTTP_201_CREATED)
 async def upload_data(
-    request: Request,
     project_id: str,
     file: UploadFile,
     appSettings: Settings = Depends(get_settings)

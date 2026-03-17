@@ -93,5 +93,3 @@ app = FastAPI()
 
 app.include_router(base.base_router)
 ```
-
-<div style="width: 100%; height: 30px; background: linear-gradient(to right, rgb(235, 238, 212), rgb(235, 238, 212));"></div>
