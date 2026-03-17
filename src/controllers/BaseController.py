@@ -1,4 +1,4 @@
-from core import Settings, get_settings
+from ..core import Settings, get_settings
 import os, secrets, string
 
 

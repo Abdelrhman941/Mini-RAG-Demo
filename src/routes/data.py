@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, UploadFile, status
 from fastapi.responses import JSONResponse
-from core import Settings, get_settings
-from controllers import DataController, ProcessController
-from models import ResponseSignal as RS
+from ..core import Settings, get_settings
+from ..controllers import DataController, ProcessController
+from ..models import ResponseSignal as RS
 import aiofiles, logging
 from .schemas import ProcessRequest
 

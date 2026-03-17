@@ -1,7 +1,7 @@
 from datetime import UTC, datetime
 from fastapi import APIRouter, Depends
-from core import Settings, get_settings
-from models import ResponseSignal as RS
+from ..core import Settings, get_settings
+from ..models import ResponseSignal as RS
 
 base_router = APIRouter(prefix="/v1", tags=["base"])
 
