@@ -1,8 +1,8 @@
-from fastapi import APIRouter, Depends, UploadFile, status
+from fastapi import APIRouter, Depends, UploadFile, status, Request
 from fastapi.responses import JSONResponse
 from ..core import Settings, get_settings
 from ..controllers import DataController, ProcessController
-from ..models import ResponseSignal as RS
+from ..models import ResponseSignal as RS, ProjectModel, ChunkModel, DataChunk
 import aiofiles, logging
 from .schemas import ProcessRequest
 
@@ -13,7 +13,10 @@ data_router = APIRouter(prefix="/v1/data", tags=["data"])
 
 @data_router.post("/upload/{project_id}", status_code=status.HTTP_201_CREATED)
 async def upload_data(
-    project_id: str, file: UploadFile, appSettings: Settings = Depends(get_settings)
+    request: Request,
+    project_id: str,
+    file: UploadFile,
+    appSettings: Settings = Depends(get_settings)
 ):
     data_controller = DataController()
 
@@ -76,16 +79,16 @@ async def upload_data(
         status_code=status.HTTP_201_CREATED,
         content={
             "signal": RS.FILE_UPLOAD_SUCCESS.value,
-            "file_id": file_id,
             "original_filename": file.filename,
             "file_size": file.size,
-            "project_id": project_id,
+            "file_id": file_id,
         },
     )
 
 
 @data_router.post("/process/{project_id}")
 async def process_endpoint(
+    request: Request,
     project_id: str,
     process_request: ProcessRequest,
     appSettings: Settings = Depends(get_settings),
@@ -94,6 +97,13 @@ async def process_endpoint(
         file_id = process_request.file_id
         chunk_size = process_request.chunk_size or appSettings.CHUNK_SIZE_DEFAULT
         overlap_size = process_request.overlap_size or appSettings.OVERLAP_SIZE_DEFAULT
+        do_reset = process_request.do_reset
+
+        # ----------- 1. Get or create project
+        project_model = ProjectModel(db_client=request.app.db_client)
+        project_record = await project_model.get_project_or_create_one(project_id=project_id)
+
+        # ----------- 2. Process file into chunks
         process_controller = ProcessController(project_id=project_id)
         file_content = process_controller.get_file_content(file_id=file_id)
         file_chunks = process_controller.process_file_content(
@@ -103,24 +113,42 @@ async def process_endpoint(
             overlap_size=overlap_size,
         )
 
-        # convert chunks to dict format for response (or you can choose to save them in DB instead)
-        chunks_data = [
-            {"content": chunk.page_content, "metadata": chunk.metadata}
-            for chunk in file_chunks
+        if not file_chunks:
+            return JSONResponse(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                content={"signal": RS.PROCESSING_FAILED.value, "error": "No chunks generated"},
+            )
+
+        # ----------- 3. Build DataChunk records
+        chunk_records = [
+            DataChunk(
+                chunk_text=chunk.page_content,
+                chunk_metadata=chunk.metadata,
+                chunk_order=i+1,
+                chunk_project_id=project_record.id,
+            )
+            for i, chunk in enumerate(file_chunks)
         ]
+
+        # ----------- 4. Reset if requested
+        chunk_model = ChunkModel(db_client=request.app.db_client)
+        if do_reset:
+            await chunk_model.delete_chunks_by_project_id(project_id=project_record.id)
+
+        # ----------- 5. Insert chunks
+        inserted_count = await chunk_model.insert_many_chunks(chunks=chunk_records)
 
         return JSONResponse(
             status_code=status.HTTP_200_OK,
             content={
                 "signal": RS.PROCESSING_SUCCESS.value,
-                "project_id": project_id,
                 "file_id": file_id,
-                "overlap_size": overlap_size,
                 "chunk_size": chunk_size,
-                "chunks_preview": chunks_data[:10],
-                "total_chunks": len(chunks_data),
+                "overlap_size": overlap_size,
+                "inserted_chunks": inserted_count,
             },
         )
+
     except FileNotFoundError as e:
         logger.error(f"File not found: {e}")
         return JSONResponse(

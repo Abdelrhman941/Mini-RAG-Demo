@@ -5,4 +5,7 @@ python-dotenv==1.2.2            # for managing environment variables
 pydantic-settings==2.13.1       # for structured settings management
 aiofiles==25.1.0                # for asynchronous file handling
 langchain==1.2.12               # for text splitting and document processing
+langchain-community==0.4.1      # for additional text splitting utilities
 PyMuPDF==1.27.2                 # for PDF processing
+motor==3.7.1                    # for asynchronous MongoDB interactions
+pydantic-mongo==3.1.0           # for MongoDB models with Pydantic

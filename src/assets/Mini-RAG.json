@@ -79,7 +79,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n    \"file_id\": \"4e2za85s9bif_ww2.txt\",\r\n    \"chunk_size\":400,\r\n    \"overlap_size\":20\r\n}",
+          "raw": "{\r\n    \"file_id\": \"na058dreg9x1_ww2.txt\",\r\n    \"chunk_size\":400,\r\n    \"overlap_size\":20,\r\n    \"do_reset\": 1\r\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -127,11 +127,11 @@
   "variable": [
     {
       "key": "base",
-      "value": ""
+      "value": "http://localhost:8000/v1"
     },
     {
       "key": "data",
-      "value": ""
+      "value": "http://localhost:8000/v1/data"
     }
   ]
 }

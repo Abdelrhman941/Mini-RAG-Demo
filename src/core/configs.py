@@ -1,4 +1,5 @@
 from pydantic_settings import BaseSettings
+from pathlib import Path
 
 
 class Settings(BaseSettings):
@@ -16,9 +17,13 @@ class Settings(BaseSettings):
     CHUNK_SIZE_DEFAULT: int = 800
     OVERLAP_SIZE_DEFAULT: int = 100
 
-    class Config:
-        env_file = ".env"
+    # ------------------ MongoDB Configuration ------------------
+    MONGODB_URL: str
+    MONGODB_DATABASE: str
 
+    class Config:
+        env_file = Path(__file__).resolve().parent.parent / ".env"
+        env_file_encoding = "utf-8"
 
 def get_settings():
     return Settings()
