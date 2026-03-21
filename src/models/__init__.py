@@ -1,7 +1,8 @@
 from .enums import ResponseSignal, ProcessingEnum, DataBaseEnum
 from .ProjectModel import ProjectModel
 from .ChunkModel import ChunkModel
-from .db_schemas import Project, DataChunk
+from .db_schemas import Project, DataChunk, Asset
+from .AssetModel import AssetModel
 
 __all__ = [
     "ResponseSignal",
@@ -10,5 +11,7 @@ __all__ = [
     "ProjectModel",
     "ChunkModel",
     "Project",
-    "DataChunk"
+    "DataChunk",
+    "Asset",
+    "AssetModel",
 ]

@@ -1,6 +1,6 @@
 from pydantic_settings import BaseSettings
 from pathlib import Path
-
+from functools import lru_cache
 
 class Settings(BaseSettings):
     # ------------------ Application Configuration ------------------
@@ -12,8 +12,8 @@ class Settings(BaseSettings):
     # ------------------ File Upload Configuration ------------------
     FILE_ALLOWED_TYPES: list[str] = ["text/plain", "application/pdf"]
     FILE_MAX_SIZE: int = 10
-    FILE_DEFAULT_CHUNK_SIZE: int = 512000  # bytes for reading uploaded files
-    FILE_MAX_SIZE_SCALE: int = 1048576  # MB to bytes conversion (1MB = 1048576 bytes)
+    FILE_DEFAULT_CHUNK_SIZE: int = 512000   # bytes for reading uploaded files
+    FILE_MAX_SIZE_SCALE: int = 1048576      # MB to bytes conversion (1MB = 1048576 bytes)
     CHUNK_SIZE_DEFAULT: int = 800
     OVERLAP_SIZE_DEFAULT: int = 100
 
@@ -25,5 +25,6 @@ class Settings(BaseSettings):
         env_file = Path(__file__).resolve().parent.parent / ".env"
         env_file_encoding = "utf-8"
 
+@lru_cache
 def get_settings():
     return Settings()

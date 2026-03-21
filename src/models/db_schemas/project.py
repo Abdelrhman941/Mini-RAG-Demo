@@ -16,3 +16,14 @@ class Project(BaseModel):
         if not re.match(r'^[a-zA-Z0-9_-]+$', value):
             raise ValueError('project_id must contain only alphanumeric, hyphens, and underscores')
         return value
+
+    @classmethod
+    def get_indexes(cls):
+        return [
+            {
+                "key": [("project_id", 1)],
+                "name": "idx_project_id",
+                "unique": True,
+                "background": True
+            }
+        ]

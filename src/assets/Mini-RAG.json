@@ -51,11 +51,8 @@
             {
               "key": "file",
               "type": "file",
-              "id": 0,
               "fileUploadError": "",
-              "src": [
-                "c:\\Users\\abdal\\Desktop\\ww2.txt"
-              ]
+              "src": "/C:/Users/abdal/Desktop/ww2.txt"
             }
           ]
         },
@@ -79,7 +76,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n    \"file_id\": \"na058dreg9x1_ww2.txt\",\r\n    \"chunk_size\":400,\r\n    \"overlap_size\":20,\r\n    \"do_reset\": 1\r\n}",
+          "raw": "{\r\n    \"file_id\": \"oe9bbzwm4dss_ww2.txt\",\r\n    \"chunk_size\": 400,\r\n    \"overlap_size\": 20,\r\n    \"do_reset\": false\r\n}",
           "options": {
             "raw": {
               "language": "json"

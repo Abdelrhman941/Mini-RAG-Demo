@@ -9,6 +9,23 @@ class ProjectModel(BaseDataModel):
         super().__init__(db_client=db_client)
         self.collection = self.db_client[DB.COLLECTION_PROJECT_NAME.value]
 
+    # ------------------ Instance creation ------------------
+    @classmethod
+    async def create_instance(cls, db_client: object):
+        instance = cls(db_client)
+        await instance.init_collection()
+        return instance
+
+    # ------------------ Collection initialization ------------------
+    async def init_collection(self):
+        indexes = Project.get_indexes()
+        for index in indexes:
+            await self.collection.create_index(
+                index["key"],
+                name=index["name"],
+                unique=index["unique"]
+            )
+
     # ------------------ Project operations [CRUD] ------------------
     async def create_project(self, project: Project):
         result = await self.collection.insert_one(project.model_dump(by_alias=True, exclude_unset=True))
@@ -20,8 +37,7 @@ class ProjectModel(BaseDataModel):
         record = await self.collection.find_one({"project_id": project_id})
         if record is None:
             project = Project(project_id=project_id)
-            project = await self.create_project(project=project)
-            return project
+            return await self.create_project(project=project)
         return Project(**record)
 
     # ------------------ Get all projects with pagination ------------------
